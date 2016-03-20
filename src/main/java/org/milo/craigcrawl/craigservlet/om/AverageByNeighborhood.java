@@ -1,16 +1,14 @@
-package org.milo.craigcrawl.craigservlet;
+package org.milo.craigcrawl.craigservlet.om;
 
-public class AverageByNeighborhood
+
+public class AverageByNeighborhood extends HomeRent
 {
 	private long locationid;
 
-	private String neighborhood;
-	
 	private String parent;
 
 	private double averagesquarefeet;
 
-	private double averageprice;
 
 	/**
 	 * @return the locationid
@@ -28,21 +26,6 @@ public class AverageByNeighborhood
 		this.locationid = locationid;
 	}
 
-	/**
-	 * @return the neighborhood
-	 */
-	public String getNeighborhood()
-	{
-		return neighborhood;
-	}
-
-	/**
-	 * @param neighborhood the neighborhood to set
-	 */
-	public void setNeighborhood(String neighborhood)
-	{
-		this.neighborhood = neighborhood;
-	}
 
 	/**
 	 * @return the parent
@@ -74,22 +57,6 @@ public class AverageByNeighborhood
 	public void setAveragesquarefeet(double averagesquarefeet)
 	{
 		this.averagesquarefeet = averagesquarefeet;
-	}
-
-	/**
-	 * @return the averageprice
-	 */
-	public double getAverageprice()
-	{
-		return averageprice;
-	}
-
-	/**
-	 * @param averageprice the averageprice to set
-	 */
-	public void setAverageprice(double averageprice)
-	{
-		this.averageprice = averageprice;
 	}
 
 }

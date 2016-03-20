@@ -16,6 +16,7 @@
     <url-pattern>/service/*</url-pattern>
   </servlet-mapping>
       <welcome-file-list>
-        <welcome-file>resttest.html</welcome-file>
+        <welcome-file>treemap.html</welcome-file>
+        <welcome-file>combochart.html</welcome-file>
     </welcome-file-list>
 </web-app>

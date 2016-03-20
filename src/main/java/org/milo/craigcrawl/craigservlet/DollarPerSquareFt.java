@@ -9,12 +9,49 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AverageCraigRent
-{
+import org.milo.craigcrawl.craigservlet.om.AverageByNeighborhood;
+import org.milo.craigcrawl.craigservlet.om.HomeRent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-	public List<AverageByNeighborhood> retrieveAverageByNeighborhood()
+public class DollarPerSquareFt implements AverageChart
+{
+	private static final Logger LOGGER = LoggerFactory.getLogger(DollarPerSquareFt.class);
+	
+	private Map<Long, String> allLocations()
 	{
-		final List<AverageByNeighborhood> avgList = new ArrayList<>();
+		Map<Long, String> locations = new HashMap<>();
+
+		try (final Connection con = CrawlDataSource.getInstance()
+				.getConnection();
+				final Statement statement = con.createStatement())
+		{
+			String query = "select id, neighborhood from location where parentid is not null ";
+
+			final ResultSet rs = statement.executeQuery(query);
+
+			while (rs.next())
+			{
+				locations.put(rs.getLong("id"), rs.getString("neighborhood"));
+			}
+
+			rs.close();
+
+		}
+		catch (final SQLException e)
+		{
+			LOGGER.error("Failed to retrieve locations" , e);
+		}
+
+		return locations;
+
+	}
+
+
+	@Override
+	public List<HomeRent> retrieveAverage()
+	{
+		final List<HomeRent> avgList = new ArrayList<>();
 
 		final AverageByNeighborhood root = new AverageByNeighborhood();
 		root.setNeighborhood("Oklahoma City");
@@ -34,7 +71,6 @@ public class AverageCraigRent
 			sb.append("select neighborhood, (sum(squareft) / sum(price)) as price, count(1) as squareft, parentid from homerent hr ");
 			sb.append("inner join addressneighborhood ad ON hr.id = ad.homerentid ");
 			sb.append("inner join location lo ON ad.locationid = lo.id ");
-			// sb.append("where lo.parentid = 0 ");
 			sb.append("where lo.city = 'Oklahoma City' ");
 			sb.append("and hr.invalid = false ");
 			sb.append("and hr.squareft is not null ");
@@ -70,41 +106,10 @@ public class AverageCraigRent
 		}
 		catch (final SQLException e)
 		{
-			e.printStackTrace();
+			LOGGER.error("Failed to retrieve Average" , e);
 		}
 
 		return avgList;
-
-	}
-	
-	
-	private Map<Long, String> allLocations()
-	{
-		Map<Long, String> locations = new HashMap<>();
-
-		try (final Connection con = CrawlDataSource.getInstance()
-				.getConnection();
-				final Statement statement = con.createStatement())
-		{
-			String query = "select id, neighborhood from location where parentid is not null ";
-
-			final ResultSet rs = statement.executeQuery(query);
-
-			while (rs.next())
-			{
-				locations.put(rs.getLong("id"), rs.getString("neighborhood"));
-			}
-
-			rs.close();
-
-		}
-		catch (final SQLException e)
-		{
-			e.printStackTrace();
-		}
-
-		return locations;
-
 	}
 
 }
