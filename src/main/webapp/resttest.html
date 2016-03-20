@@ -1,0 +1,65 @@
+<html>
+
+<body>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <div id="chart_div" style="width: 100%; height: 100%;"></div>
+
+  <script  type="text/javascript" >      
+   google.charts.load('current', {'packages':['treemap']});
+   google.charts.setOnLoadCallback(drawChart);
+   function drawChart() {
+
+    var json = $.getJSON('/craigservlet/service/craigrent/tree', function(avg) {
+     console.log(avg);
+     //var array = JSON.parse(json);
+     var data = new google.visualization.DataTable();
+     data.addColumn('string','NeighborHood');
+     data.addColumn('string','Parent');
+     data.addColumn('number' ,'# Posted (size)');
+     data.addColumn('number' ,'Price (color)');
+
+     data.addRows(avg.length);
+     for (var i = 0, l = avg.length; i < l; i++) {
+      var district = avg[i];
+
+      data.setCell(i,0,district.neighborhood);
+      data.setCell(i,1,district.parent);
+      data.setCell(i,2,district.averagesquarefeet);
+      data.setCell(i,3,district.averageprice);
+    }
+
+    tree = new google.visualization.TreeMap(document.getElementById('chart_div'));
+
+    var options = {
+      minColor: '#F51005',
+      midColor: '#F2BC13',
+      maxColor:  '#F3FC30',
+      headerHeight: 20,
+      fontColor: 'black',
+      showScale: true,
+      maxDepth: 1,
+      maxPostDepth: 2,
+      generateTooltip: showFullTooltip
+    };
+
+    tree.draw(data, options);
+
+    function showFullTooltip(row, size, value) {
+      return '<div style="background:#fd9; padding:10px; border-style:solid">' +
+      '<span style="font-family:Courier"><b>' + data.getValue(row, 0) +
+      '</b>, ' + data.getValue(row, 1) + ', ' + data.getValue(row, 2) +
+      ', ' + data.getValue(row, 3) + '</span><br>' +
+      'Datatable row: ' + row + '<br>' +
+      data.getColumnLabel(2) +
+      ' (total value of this cell and its children): ' + size + '<br>' +
+      data.getColumnLabel(3) + ': ' + value + ' </div>';
+    };
+
+  });
+
+
+}</script>
+</body>
+
+</html>
